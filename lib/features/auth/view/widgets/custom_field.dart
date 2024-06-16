@@ -11,6 +11,14 @@ class CustomField extends StatelessWidget {
       controller: textEditingController,
       decoration: InputDecoration(hintText: hintText),
       obscureText: isObscureText,
+      validator: (val) {
+        if(val!.trim().isEmpty){
+          return "$hintText is empty";
+        }
+        else {
+          return null;
+        }
+      },
     );
   }
 }

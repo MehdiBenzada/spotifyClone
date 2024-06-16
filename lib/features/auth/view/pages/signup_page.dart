@@ -1,7 +1,10 @@
 import 'package:client/core/theme/app_pallete.dart';
+import 'package:client/features/auth/repositories/auth_remote_repository.dart';
+import 'package:client/features/auth/view/pages/login_page.dart';
 import 'package:client/features/auth/view/widgets/auth_gradient_button.dart';
 import 'package:client/features/auth/view/widgets/custom_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -65,25 +68,32 @@ class _SignupPageState extends State<SignupPage> {
               ),// sdsdds
                AuthGradienButton(
                 buttontext: "Sign up",
-                onTap: () {
+                onTap: () async {
+                 await authRemoteRepository().signup(email: emailController.text, password: passwordController.text, name: nameController.text);
                   
                 },
               ),
               const SizedBox(
                 height: 20,
               ),
-              RichText(
-                  text: TextSpan(
-                style: Theme.of(context).textTheme.titleMedium,
-                text: "Already have an account? ",
-                children: const [
-                  TextSpan(
-                    text: "sign in?",
-                    style: TextStyle(
-                        color: Pallete.gradient2, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ))
+              GestureDetector(
+                onTap: () {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+
+                },
+                child: RichText(
+                    text: TextSpan(
+                  style: Theme.of(context).textTheme.titleMedium,
+                  text: "Already have an account? ",
+                  children: const [
+                    TextSpan(
+                      text: "sign in?",
+                      style: TextStyle(
+                          color: Pallete.gradient2, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                )),
+              )
             ],
           ),
         ),
