@@ -1,20 +1,24 @@
 import 'package:client/core/theme/app_pallete.dart';
+import 'package:client/core/utils.dart';
+import 'package:client/core/widgets/loader.dart';
 import 'package:client/features/auth/repositories/auth_remote_repository.dart';
 import 'package:client/features/auth/view/pages/login_page.dart';
 import 'package:client/features/auth/view/widgets/auth_gradient_button.dart';
 import 'package:client/features/auth/view/widgets/custom_field.dart';
+import 'package:client/features/auth/viewmodel/auth_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 
-class SignupPage extends StatefulWidget {
+class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  ConsumerState<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _SignupPageState extends ConsumerState<SignupPage> {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -29,9 +33,25 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = ref.watch(authViewModelProvider)?.isLoading==true;
+    ref.listen(authViewModelProvider, (_,next) {
+      next?.when(
+        loading: () {},
+        error: (error, stackTrace) {
+         showSnackBar(context, error.toString());
+
+        },
+        data: (data) {
+         showSnackBar(context, "Account created successfully, please login.");
+          Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage(),));
+        },
+      );
+    }
+    );
+    
     return Scaffold(
       appBar: AppBar(),
-      body: Padding(
+      body: isLoading? const loader(): Padding(
         padding: const EdgeInsets.all(8.0),
         child: Form(
           key: formkey,
@@ -70,15 +90,17 @@ class _SignupPageState extends State<SignupPage> {
               AuthGradienButton(
                 buttontext: "Sign up",
                 onTap: () async {
-                  final res = await authRemoteRepository().signup(
+                  if (formkey.currentState!.validate()) {
+                    
+                 await ref.read(authViewModelProvider.notifier).signUpUser(
+                      name: nameController.text,
                       email: emailController.text,
-                      password: passwordController.text,
-                      name: nameController.text);
-                  final val = switch (res) {
-                    Left(value: final l) => l,
-                    Right(value: final r) => r.toString(),
-                  };
-                  print(val);
+                      password: passwordController.text);
+                  }
+                  
+
+
+                  
                   
                 },
               ),

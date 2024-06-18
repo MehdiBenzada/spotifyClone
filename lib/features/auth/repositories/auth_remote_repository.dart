@@ -5,8 +5,16 @@ import 'package:client/features/auth/model/user_model.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:http/http.dart' as http;
 import 'package:client/core/constants/server_constant.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class authRemoteRepository {
+part 'auth_remote_repository.g.dart';
+
+@riverpod 
+AuthRemoteRepository authRemoteRepository(AuthRemoteRepository ref){
+  return AuthRemoteRepository();
+} 
+
+class AuthRemoteRepository {
   Future<Either<appFailure, userModel>> signup({
     required String email,
     required String password,
