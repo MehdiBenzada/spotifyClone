@@ -5,6 +5,7 @@ import 'package:client/features/auth/view/widgets/auth_gradient_button.dart';
 import 'package:client/features/auth/view/widgets/custom_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fpdart/fpdart.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -65,11 +66,19 @@ class _SignupPageState extends State<SignupPage> {
               ),
               const SizedBox(
                 height: 20,
-              ),// sdsdds
-               AuthGradienButton(
+              ), // sdsdds
+              AuthGradienButton(
                 buttontext: "Sign up",
                 onTap: () async {
-                 await authRemoteRepository().signup(email: emailController.text, password: passwordController.text, name: nameController.text);
+                  final res = await authRemoteRepository().signup(
+                      email: emailController.text,
+                      password: passwordController.text,
+                      name: nameController.text);
+                  final val = switch (res) {
+                    Left(value: final l) => l,
+                    Right(value: final r) => r.toString(),
+                  };
+                  print(val);
                   
                 },
               ),
@@ -78,8 +87,10 @@ class _SignupPageState extends State<SignupPage> {
               ),
               GestureDetector(
                 onTap: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
-
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginPage()));
                 },
                 child: RichText(
                     text: TextSpan(
@@ -89,7 +100,8 @@ class _SignupPageState extends State<SignupPage> {
                     TextSpan(
                       text: "sign in?",
                       style: TextStyle(
-                          color: Pallete.gradient2, fontWeight: FontWeight.bold),
+                          color: Pallete.gradient2,
+                          fontWeight: FontWeight.bold),
                     ),
                   ],
                 )),
